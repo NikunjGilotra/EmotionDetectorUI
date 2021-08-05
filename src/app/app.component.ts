@@ -1,16 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {WebcamImage, WebcamInitError} from 'ngx-webcam';
 import {Subject, Observable} from 'rxjs';
 declare var $: any;
 import * as RecordRTC from 'recordrtc';
 import { DomSanitizer } from '@angular/platform-browser';
+import { HttpClient, HttpEvent, HttpErrorResponse, HttpEventType, HttpHeaders } from  '@angular/common/http';  
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'emotionDetectorUI';
 
 
@@ -19,6 +21,7 @@ export class AppComponent {
   
   triggerSnapshot(): void {
    this.trigger.next();
+   this.uploadForm.get('image').setValue(this.webcamImage);
   }
 
   handleImage(webcamImage: WebcamImage): void {
@@ -43,7 +46,14 @@ recording = false;
 //URL of Blob
 url;
 error;
-constructor(private domSanitizer: DomSanitizer) {}
+uploadForm: FormGroup; 
+constructor(private domSanitizer: DomSanitizer,private httpClient: HttpClient,private formBuilder: FormBuilder) {}
+  
+ngOnInit(): void {
+    this.uploadForm = this.formBuilder.group({
+      image: ['']
+    });
+  }
 sanitize(url: string) {
 return this.domSanitizer.bypassSecurityTrustUrl(url);
 }
@@ -51,6 +61,7 @@ return this.domSanitizer.bypassSecurityTrustUrl(url);
 * Start recording.
 */
 initiateRecording() {
+  this.url = null;
 this.recording = true;
 let mediaConstraints = {
 video: false,
@@ -93,6 +104,15 @@ console.log("url", this.url);
 errorCallback(error) {
 this.error = 'Can not play audio in your browser';
 }
-
-
+ public uploadimage(){
+  //  console.log(this.webcamImage.imageAsDataUrl);
+  const formData = new FormData();
+  formData.append('image', this.webcamImage.imageAsDataUrl);
+  let headers = new HttpHeaders();
+headers.set("Accept","multipart/form-data");
+  this.httpClient.post<any>('http://127.0.0.1:5000/captureimage', formData,{headers}).subscribe(
+    (res) => console.log(res),
+    (err) => console.log(err)
+  );
+ }
 }
