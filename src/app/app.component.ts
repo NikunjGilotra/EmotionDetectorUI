@@ -108,9 +108,8 @@ this.error = 'Can not play audio in your browser';
   //  console.log(this.webcamImage.imageAsDataUrl);
   const formData = new FormData();
   formData.append('image', this.webcamImage.imageAsDataUrl);
-  let headers = new HttpHeaders();
-headers.set("Accept","multipart/form-data");
-  this.httpClient.post<any>('http://127.0.0.1:5000/captureimage', formData,{headers}).subscribe(
+  
+  this.httpClient.post<any>('http://127.0.0.1:5000/captureimage', formData).subscribe(
     (res) => console.log(res),
     (err) => console.log(err)
   );
