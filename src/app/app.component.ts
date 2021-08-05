@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
 
   public webcamImage: WebcamImage = null;
   public trigger: Subject<void> = new Subject<void>();
+  blob: any;
   
   triggerSnapshot(): void {
    this.trigger.next();
@@ -89,27 +90,32 @@ stopRecording() {
 this.recording = false;
 this.record.stop(this.processRecording.bind(this));
 }
-/**
-* processRecording Do what ever you want with blob
-* @param  {any} blob Blog
-*/
+
 processRecording(blob) {
+  this.blob=blob;
 this.url = URL.createObjectURL(blob);
 console.log("blob", blob);
 console.log("url", this.url);
 }
-/**
-* Process Error.
-*/
+
 errorCallback(error) {
 this.error = 'Can not play audio in your browser';
 }
  public uploadimage(){
-  //  console.log(this.webcamImage.imageAsDataUrl);
   const formData = new FormData();
   formData.append('image', this.webcamImage.imageAsDataUrl);
   
   this.httpClient.post<any>('http://127.0.0.1:5000/captureimage', formData).subscribe(
+    (res) => console.log(res),
+    (err) => console.log(err)
+  );
+ }
+
+ public uploadaudio(){
+  const formData = new FormData();
+  formData.append('file', this.blob);
+  
+  this.httpClient.post<any>('http://127.0.0.1:5000/captureaudio', formData).subscribe(
     (res) => console.log(res),
     (err) => console.log(err)
   );

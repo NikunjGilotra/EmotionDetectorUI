@@ -6,7 +6,7 @@
             (imageCapture)="handleImage($event)">
  </webcam>
 <br>
- <button class="actionBtn"  (click)="triggerSnapshot();">
+ <button class="actionBtn"  (click)="uploadaudio();">
   Click Here and take the Shot</button>
 
 <div class="snapshot" *ngIf="webcamImage">
@@ -16,7 +16,7 @@
 </div>
 
 <div style="text-align:center;margin-top: 200px;" >
-  <button (click)="uploadimage()" *ngIf="!recording" > Start Recording </button>
+  <button (click)="initiateRecording()" *ngIf="!recording" > Start Recording </button>
   <button (click)="stopRecording()" *ngIf="recording" > Stop Recording </button>
   <audio controls="" *ngIf="url">
   <source [src]="sanitize(url)" type="audio/wav">
